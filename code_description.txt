@@ -37,4 +37,6 @@ read_feature.py
 
 util.py & util_expand.py:
     # some functions, only a few of them are called
+    
+There are lots of absolute paths in the previous code, before you run anyone of them, please kindly replace the absolute path "/home/ffl/nus/MM/cur_trans/" with "the_location_where_you_uncompress_cur_trans.tar.gz/cur_trans/" and "/home/ffl/nus/MM/complementary/chinese_university_ranking/" with "the_location_where_you_uncompress_ data_replied_tran_cur.tar.gz/data_replied_tran_cur/".
 
