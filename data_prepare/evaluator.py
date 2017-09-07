@@ -27,6 +27,14 @@ class evaluator:
         # read ranking lists
         self.rank_lists, self.rank_dicts = initialize_ranks(rl_path, rank_names)
 
+    '''
+        Given a generated ranking list, compare it with ground truth and
+        calculate accuracy and Spearman's rank correlation
+
+        gen_rank: generated ranking list
+
+        return: accuracy and Spearman's rank correlation
+    '''
     def evaluate(self, gen_rank):
         # calculate accuracy #correctly ranked pairs / #pairs occur in the generated rank as well as in ground truth pairs
         occured = 0

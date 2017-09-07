@@ -1,0 +1,40 @@
+# Forgive me, there are too many duplicate and one time code as two projects: collage entrance line prediction and transductive univeristy ranking are jointly developed. Here are some code wrote for collage entrance line prediction:
+
+pre_ent_line/
+    # code under this folder is wrote for collage entrance line prediction
+
+    experiment.py
+        # Code for pair-wise experiment
+        # How to run (jump to the end of this file):
+            # For average collage entrance line prediction, comment the final line 'exp_province(            # )' and then execute 'python experiment.py'
+            # For province and category-wised prediction, uncomment the final line, comment the 
+            # remaining, and execute the same command
+
+    pow_experiment.py
+        # Code for point-wise experiment
+        # How to run:
+            #Similar to experiment.py
+
+    ground_truth.py
+        # Generate pair-wise ground truth for each province and each category (
+        literal/science)
+        # How to run:
+            # Simply execute 'python ground_truth.py'
+
+    gaokao_feature.py
+        # Extract universities' collage entrance lines, only a function 'extract_uni_line_fir' is        #  used.
+        # How to run:
+            # Simply execute 'python ground_truth.py'
+
+evaluator.py:
+    # evaluate a generated ranking list
+
+feature.py:
+    # data preprocessing
+
+read_feature.py
+    # read feature from files
+
+util.py & util_expand.py:
+    # some functions, only a few of them are called
+

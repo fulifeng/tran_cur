@@ -10,12 +10,19 @@ from util import read_ranking_list
 
 
 class experiment:
-    def __init__(self, work_path, tool_path, train_fname, test_fname, gt_fname, rl_path, rl_names, sel_uni_fname):
+    def __init__(self, work_path, tool_path, train_fname, test_fname,
+                 gt_fname, rl_path, rl_names, sel_uni_fname):
+        # path to folder stores trained models and generated results
         self.work_path = work_path
+        # path to the executable file of RankSVM or RankNet
         self.tool_path = tool_path
+        # filename of training data (different format for different tool)
         self.train_fname = train_fname
+        # filename of testing data
         self.test_fname = test_fname
+        # filename of ground truth
         self.gt_fname = gt_fname
+        # historical ranking lists from traditional methods (for Evaluator)
         self.rl_path = rl_path
         self.rl_names = rl_names
         os.chdir(self.work_path)
@@ -33,6 +40,9 @@ class experiment:
         # initialize evaluator
         self.evaluator = evaluator.evaluator(self.rl_path, self.rl_names, self.gt_fname)
 
+    '''
+        Ensemble the generated ranking list of RankSVM and RankNet
+    '''
     def ensemble(self, rsvm_tran_out, rnet_tran_out, ratio):
         assert ratio < 1 and ratio > 0, 'ratio: %f unexpected' % ratio
         rsvm = read_ranking_list(rsvm_tran_out, float)
@@ -51,6 +61,10 @@ class experiment:
         # print acc, cors
         return acc, cors
 
+    '''
+        Parameter tuning for the weight (ratio) that combines results from
+        RankSVM and RankNet.
+    '''
     def ens_par_tun(self, rsvm_tran_out, rnet_tran_out):
         ratio = 0.001
         with open('ens_par_tun.log', 'w') as fout:
@@ -69,6 +83,14 @@ class experiment:
             fout.write('best performance: %f\n' % best_acc)
         print 'best performance:', best_acc
 
+    '''
+        Generate a ranking list with a trained model
+
+        tool: 'rank_svm'/'rank_net'
+        mod_out_fname: filename of trained model
+
+        return: the filename that stores the generated ranking list.
+    '''
     def predict(self, tool, mod_out_fname):
         gen_rl_fname = mod_out_fname.replace('mod_', 'gen_')
         if tool == 'rank_svm':
@@ -82,6 +104,9 @@ class experiment:
         os.system(command)
         return gen_rl_fname
 
+    '''
+        Parameter tuning with RankNet
+    '''
     def rank_net_par_tun(self):
         # parameters
         epoch = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 120, 140]
@@ -121,6 +146,9 @@ class experiment:
         print 'best performance:', best_acc
         print 'best generate list:', best_rl_fname
 
+    '''
+        Parameter tuning with RankSVM
+    '''
     def rank_svm_par_tun(self):
         # parameters
         c = [0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, 128]
@@ -173,6 +201,15 @@ class experiment:
         print 'best performance:', best_acc
         print 'best generate list:', best_rl_fname
 
+    '''
+        Given a generated ranking list, compared it with the corresponding
+        ground truth and report the accuracy and Spearman's rank correlation
+
+        tool: 'rank_svm'/'rank_net'
+        gen_rl_fname: the filename that stores the generated ranking list.
+
+        return: accuracy and Spearman's rank correlation
+    '''
     def test(self, tool, gen_rl_fname):
         # read generated ranking list
         gen_rl = []
@@ -194,6 +231,14 @@ class experiment:
         print acc, cors
         return acc, cors
 
+    '''
+        Train a model with given hyperparameters and a specific tool
+
+        tool: 'rank_svm'/'rank_net'
+        paras: dictionary stores hyperparameters
+
+        return: the filename that stores the trained model.
+    '''
     def train(self, tool, paras):
         mod_out_fname = 'mod'
         for p_kv in paras.iteritems():
@@ -220,6 +265,16 @@ class experiment:
         os.system(command)
         return mod_out_fname
 
+    '''
+        Transfer the output of RankSVM or RankNet to a ranking list, where each
+        line has two entries, 'university_name', 'ranking_score'.
+
+        gen_rl_fname: file stores output of RankSVM or RankNet
+        tool: 'rank_svm' means output comes from RandSVM, any other value means
+                output comes from RankNet
+
+        return: nothing, the transferred list is wrote directly to file.
+    '''
     def transfer(self, tool, gen_rl_fname):
         # read generated ranking list
         gen_rl = []
@@ -238,6 +293,10 @@ class experiment:
         sor_gen_rl = sorted(gen_rank_dict.items(), key=operator.itemgetter(1), reverse=True)
         np.savetxt(gen_rl_fname + '_sorted.csv', sor_gen_rl, fmt='%s', delimiter=',')
 
+'''
+    Run an pair-wise experiment for each province and each category
+    (liberal/science)
+'''
 def exp_province():
     titles = ['2015_51_2', '2015_51_6', '2015_50_1', '2015_50_5', '2015_61_1', '2015_61_5', '2015_62_1', '2015_62_5', '2015_63_1',
               '2015_63_5', '2015_64_1', '2015_64_5', '2015_53_1', '2015_53_5', '2015_52_1', '2015_52_5', '2015_21_1', '2015_21_5',
@@ -252,20 +311,21 @@ def exp_province():
         print 'working on:', title
         os.mkdir(os.path.join('/home/ffl/nus/MM/cur_trans/exp/entrance_line_prediction/ent_lin_gt/dir_tun_pro/ranksvm', title))
         os.chdir(os.path.join('/home/ffl/nus/MM/cur_trans/exp/entrance_line_prediction/ent_lin_gt/dir_tun_pro/ranksvm', title))
-        runner = experiment(os.path.join('/home/ffl/nus/MM/cur_trans/exp/entrance_line_prediction/ent_lin_gt/dir_tun_pro/ranksvm', title),
-                                # work path
-                            '/home/ffl/nus/MM/cur_trans/tool/',  # tool path rank SVM
-                            os.path.join('/home/ffl/nus/MM/cur_trans/data/entrance_line_prediction/', 'ground_truth', 'gt_pw_province',
-                                        'pair_wise_top_university_expand_' + title + '_feature.csv'),
-                                # training data
-                            '/home/ffl/nus/MM/cur_trans/data/entrance_line_prediction/candidate_universites_feature.csv',  # testing data
-                            os.path.join('/home/ffl/nus/MM/cur_trans/data/entrance_line_prediction/', 'ground_truth', 'gt_pw_province',
-                                        'pair_wise_first_level_' + title + '.csv'),
-                            # ground truth file
-                            '/home/ffl/nus/MM/cur_trans/data/prepared/rank_lists/',  # ranking list path
-                            ['cuaa_2016', 'wsl_2017', 'rank_2017', 'qs_2016', 'usn_2017'],  # ranking names
-                            '/home/ffl/nus/MM/cur_trans/data/entrance_line_prediction/candidate_universites.csv'  # selected university file
-                            )
+        runner = experiment(
+            os.path.join('/home/ffl/nus/MM/cur_trans/exp/entrance_line_prediction/ent_lin_gt/dir_tun_pro/ranksvm', title),
+                # work path
+            '/home/ffl/nus/MM/cur_trans/tool/',  # tool path rank SVM
+            os.path.join('/home/ffl/nus/MM/cur_trans/data/entrance_line_prediction/', 'ground_truth', 'gt_pw_province',
+                            'pair_wise_top_university_expand_' + title + '_feature.csv'),
+                # training data
+            '/home/ffl/nus/MM/cur_trans/data/entrance_line_prediction/candidate_universites_feature.csv',  # testing data
+            os.path.join('/home/ffl/nus/MM/cur_trans/data/entrance_line_prediction/', 'ground_truth', 'gt_pw_province',
+                            'pair_wise_first_level_' + title + '.csv'),
+                # ground truth file
+            '/home/ffl/nus/MM/cur_trans/data/prepared/rank_lists/',  # ranking list path
+            ['cuaa_2016', 'wsl_2017', 'rank_2017', 'qs_2016', 'usn_2017'],  # ranking names
+            '/home/ffl/nus/MM/cur_trans/data/entrance_line_prediction/candidate_universites.csv'  # selected university file
+        )
         runner.rank_svm_par_tun()
         # if i > 4:
         #     break

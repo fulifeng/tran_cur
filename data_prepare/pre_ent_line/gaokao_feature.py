@@ -12,8 +12,14 @@ except NameError:
 import os
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(sys.path[0], '..')))
-from util import read_kldm_uni_values, write_unicode_matrix, write_matrix_unicode_header, clean_uni_name
+from util import read_kldm_uni_values, write_unicode_matrix, \
+    write_matrix_unicode_header, clean_uni_name
 
+
+'''
+    Extract universities' collage entrance lines, only a function
+    'extract_uni_line_fir' is used.
+'''
 class gaokao_feature:
     def __init__(self, uni_line_fname, pro_line_fname, kldm_value_fname):
         self.uni_line_fname = uni_line_fname

@@ -15,6 +15,9 @@ class feature:
                                                                                                                              'ori_feature'))
         # self.feature_nmf_fname = os.path.join(self.work_dir, 'feature_all_nmf_0.02.csv')
 
+    '''
+        Write samples (label and features) into libsvm format
+    '''
     def format_libsvm_feature_province(self):
         # read in feature
         feature = np.genfromtxt(os.path.join(self.work_dir, 'feature_all_nmf_0.0200.csv'), delimiter=',', dtype=float)
@@ -95,6 +98,9 @@ class feature:
             # if i > 3:
             #     break
 
+    '''
+        Write samples (label and features) into libsvm format
+    '''
     def format_rl_feature(self, gt_fname):
         # currently, read original feature, after NMF, use the output of NMF
         # data = self.reader.read_feature()
@@ -136,6 +142,9 @@ class feature:
                 rl_str_neg = self._rl_feature(1, ind + 1, feature[uni_index[gtp[1]]])
                 fout.write(rl_str_pos + '\n' + rl_str_neg + '\n')
 
+    '''
+        Write samples (label and features) into libsvm format by province
+    '''
     def format_rl_feature_province(self, gt_fname):
         # currently, read original feature, after NMF, use the output of NMF
         # data = self.reader.read_feature()
@@ -191,6 +200,9 @@ class feature:
             # if i > 4:
             #     break
 
+    '''
+        Write testing samples (label and features) into libsvm format
+    '''
     def format_rl_feature_test(self, uni_list_fname = None):
         # feature = np.genfromtxt(os.path.join(self.work_dir, 'feature_all_nmf_0.0200.csv'), delimiter=',', dtype=float)
         feature = np.genfromtxt(os.path.join(self.work_dir, 'feature_all_nmf_0.0200_ent-lin.csv'), delimiter=',', dtype=float)
@@ -224,6 +236,9 @@ class feature:
                 rl_str = self._rl_feature(1, 1, feature[uni_index[uni]])
                 fout.write(rl_str + '\n')
 
+    '''
+        Complete missing entries with non-negative matrix factorization
+    '''
     def nmf_com_feature(self):
         # data_fname = '/home/ffl/nus/MM/complementary/chinese_university_ranking/experiment/matrix_fea    ture/university_lines_aver_trans.csv'
         # data = np.genfromtxt(data_fname, delimiter=',', dtype=float)
@@ -259,6 +274,10 @@ class feature:
     #     print '#features:', len(sel_fea_mat)
     #     np.savetxt(os.path.join(self.work_dir, 'feature.csv'), sel_fea_mat, fmt='%s', delimiter=',')
 
+    '''
+        Concatenate features from different sources, do column normalization
+        [0, 1]
+    '''
     def transfer_feature(self):
         final_list_fname = self.sel_uni_fname
         feature_fname_fname = '/home/ffl/nus/MM/cur_trans/data/entrance_line_prediction/ground_truth/feature_fnames_ori.json'
@@ -279,6 +298,9 @@ class feature:
             rl_str += ' ' + str(fid + 1) + ':' + str(fea_value)
         return rl_str
 
+'''
+    One time code, select collage entrance line features
+'''
 def split_feature(feature_fname = 'feature_all_nmf_0.0200.csv'):
     work_dir = '/home/ffl/nus/MM/cur_trans/data/entrance_line_prediction'
     feature = np.genfromtxt(os.path.join(work_dir, feature_fname), delimiter=',', dtype=str)

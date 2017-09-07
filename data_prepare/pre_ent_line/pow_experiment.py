@@ -10,6 +10,9 @@ import evaluator
 from util import read_ranking_list
 
 
+'''
+    Functions are similar as experiment, this is for point-wise experiment
+'''
 class experiment:
     def __init__(self, work_path, tool_path, train_all_fname, test_fname, sel_uni_fname):
         self.work_path = work_path
