@@ -102,9 +102,11 @@ class generater:
                 fout.write('</tr>\n')
 
     def gen_ranks(self):
-        names = ['Rank_SVM'
+        names = ['Rank_SVM', 'Rank_Net', 'Ensemble'
                  ]
-        rfnames = ['/home/ffl/nus/MM/cur_trans/exp/ranksvm/gen_c-64_e-0.0100_t-0_sorted.csv'
+        rfnames = ['/home/ffl/nus/MM/cur_trans/exp/ranksvm/gen_c-64_e-0.0100_t-0_sorted.csv',
+                   '/home/ffl/nus/MM/cur_trans/exp/ranknet/gen_node-50_epoch-10_lr-0.00007_sorted.csv',
+                   '/home/ffl/nus/MM/cur_trans/exp/ensemble/ens_0.5.csv'
                    ]
         rank_lists = []
         for rfn in rfnames:
